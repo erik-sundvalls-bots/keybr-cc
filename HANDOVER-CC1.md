@@ -81,16 +81,15 @@ Last implementation commit before this handover: `43dac8f9` (`Add an opt-in Char
 
 ## What is unfinished or untested
 
-Browser verification of the CC1 picture was started and not finished. A dev server was left running at `http://localhost:3000/` (`npm start` / `root/index.js`, `.env` copied from `.env.example`, sqlite). No screenshot was saved, and the practice flow (select CharaChorder One, confirm the next-key circle, type a few letters, switch back to US) was not signed off. Treat the visual as unverified.
+Browser check on `http://localhost:3000/` (Node 24, `.env` from `.env.example`, sqlite) after this handover was first written:
 
-Not covered by an automated test:
+- Default practice is still United States / staggered QWERTY.
+- Settings → Layout → **CharaChorder One** shows two clusters of plus-shaped switches, thumb crosses, pinky modifiers (`Shift`, `Num`, `Fn`, `Swap`), and hub labels `01`–`18`.
+- Practice with that layout generated words starting `era rent note…` (the `etraon` subset). The next-key circle sat on left-hand `e` (index, south), which matches the map.
+- Switching the layout back to **United States** restored the normal QWERTY picture.
+- At about 390px wide the CC1 picture stayed inside the viewport; the page scrolls vertically.
 
-- The SVG actually looks like two switch clusters at practice width and at a narrow viewport.
-- Long labels (`Shift`, `Enter`, `Space`, `Right`) do not clip.
-- Corner A2 digits do not collide with the primary letter.
-- Hub labels `01`–`18` are not mistaken for the numbers lesson.
-- Heatmap, typing-test replay, and help pages render CC1 through `VirtualKeyboard`.
-- A full lesson session persists results under family `cc1` and does not merge them into QWERTY.
+Not exercised: typing through several letters to watch the circle move, the numbers lesson, heatmap, typing-test replay, help, and a saved result landing in family `cc1` instead of `qwerty`. Corner digits and hub numbers are visible on the picture; nobody checked whether they confuse the numbers lesson. Long labels (`Shift`, `Enter`, `Space`, `Right`) were readable in the screenshots and were not measured for clipping.
 
 `npm test` on Node v22.14.0 and v22.22.2 failed in `@keybr/color` `lib/convert-xyz.test.ts` (`rgb / oklch`, expected green `4.304625232653958e-15`, actual `5.028833252596066e-15`). That package was not modified. Node v24.21.0 passes it. This environment's default `node` is v22.14.0 at `/exec-daemon/node`; v24.21.0 is installed with nvm at `~/.nvm/versions/node/v24.21.0`. The repo's recent `e9c11fea` bump targets Node 26, and workspace engines want `^22.22.2 || ^24.15.0 || >=26`.
 
@@ -99,12 +98,11 @@ Not covered by an automated test:
 1. Use Node 24 or 26 (`export PATH="$HOME/.nvm/versions/node/v24.21.0/bin:$PATH"`).
 2. `npm run compile` if `.types/` is missing, then `npm run build` or `npm run build-dev`.
 3. `cp .env.example .env` if needed. `npm start`. Open `http://localhost:3000/`.
-4. Dismiss the first-visit tour. Settings → Keyboard → Layout → **CharaChorder One** → Done.
-5. Confirm two clusters of plus-shaped switches, readable letters, and a circle on the next lesson letter. Type the first few letters and confirm the circle moves. The first guided subset is `etraon`.
-6. Switch the layout back to US and confirm the staggered QWERTY keyboard and frequency order (`a` first) are unchanged.
-7. Check a ~390px viewport for overflow.
-8. If the picture is wrong, edit only `packages/keybr-keyboard/lib/cc1/build.ts` (positions) or `VirtualKeyboard.tsx` (frame height). Re-run the CC1 and guided tests.
-9. Add screenshots to the draft PR body. Paths the PR tool will upload: `<img alt="CC1 practice" src="/opt/cursor/artifacts/screenshots/cc1-practice.png" />`.
+4. With CharaChorder One selected, type the first few lesson letters and confirm the circle moves. The first guided subset is `etraon`.
+5. Open the numbers lesson and the heatmap / typing-test replay / help views and confirm CC1 still renders.
+6. Finish one lesson and confirm the stored result family is `cc1`, not `qwerty`.
+7. If the picture needs a tweak, edit only `packages/keybr-keyboard/lib/cc1/build.ts` (positions) or `VirtualKeyboard.tsx` (frame height). Re-run the CC1 and guided tests.
+8. Open the draft PR once the fork account can create issues. The previous attempt failed with GitHub `must be a collaborator`. Put screenshots in the body with `<img alt="CC1 practice" src="/opt/cursor/artifacts/screenshots/cc1-practice.webp" />`. Local copies from the check above are `cc1-settings.webp`, `cc1-practice.webp`, `us-practice.webp`, and `cc1-mobile.webp` under `/opt/cursor/artifacts/screenshots/`.
 
 Useful commands:
 
