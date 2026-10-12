@@ -93,6 +93,22 @@ Not exercised: typing through several letters to watch the circle move, the numb
 
 `npm test` on Node v22.14.0 and v22.22.2 failed in `@keybr/color` `lib/convert-xyz.test.ts` (`rgb / oklch`, expected green `4.304625232653958e-15`, actual `5.028833252596066e-15`). That package was not modified. Node v24.21.0 passes it. This environment's default `node` is v22.14.0 at `/exec-daemon/node`; v24.21.0 is installed with nvm at `~/.nvm/versions/node/v24.21.0`. The repo's recent `e9c11fea` bump targets Node 26, and workspace engines want `^22.22.2 || ^24.15.0 || >=26`.
 
+## Box session 2026-10-12
+
+Continued on Erik's box (no cloud agent). Node v24.21.0 via nvm, `.env` from `.env.example` with `DATABASE_CLIENT=sqlite`.
+
+- `npm install`, `npm run compile`, `npm run build-dev` succeeded. Note: `@keybr/server` tests fail with HTTP 500 (missing `root/public/assets/manifest.json`) unless a build has run first; that is an existing repo requirement, not CC1.
+- `env DATABASE_CLIENT=sqlite npm test` passes in full after the build.
+- New tests (commit `b2f474de`):
+  - `guided.test.ts`: once the first CC1 letters are confident, the next letters are added in CC1 order (`eaijcd` → `f` → `h` → `b` → `g` for the a–j fake model).
+  - `numbers.test.ts`: numbers lesson with CC1 includes all ten digits and generates digit text; `getCombo` is null for every digit (no key highlight, as documented).
+  - `keybr-result-io` `binary.test.ts`: a CC1 result round-trips through the binary format with layout `en-cc1` / family `cc1`.
+  - `keybr-result` `group.test.ts`: grouping by layout family keeps CC1 results apart from QWERTY results.
+- No production code changes were needed.
+- Dev server ran with `npm start` and answered HTTP 200 on `http://localhost:3000/`.
+
+Still not checked by hand in a browser: watching the circle move while typing, heatmap, typing-test replay, help view.
+
 ## Next steps, in order
 
 1. Use Node 24 or 26 (`export PATH="$HOME/.nvm/versions/node/v24.21.0/bin:$PATH"`).
