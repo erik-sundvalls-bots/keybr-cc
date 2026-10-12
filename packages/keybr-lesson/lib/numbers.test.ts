@@ -159,3 +159,20 @@ describe("generate text using settings", () => {
     );
   });
 });
+
+test("cc1 numbers lesson generates digits without keyboard positions", () => {
+  // CC1 digits live on the second layer and are not in the character map,
+  // so the lesson still works but there is no key to highlight.
+  const settings = new Settings();
+  const keyboard = loadKeyboard(Layout.EN_CC1);
+  const model = new FakePhoneticModel();
+  const lesson = new NumbersLesson(settings, keyboard, model);
+  const lessonKeys = lesson.update(makeKeyStatsMap(lesson.letters, []));
+
+  equal(lessonKeys.findIncludedKeys().length, 10);
+  const text = lesson.generate(lessonKeys, LCG(123));
+  equal(/^[0-9 ]+$/.test(text), true);
+  for (const digit of "0123456789") {
+    isNull(keyboard.getCombo(digit.codePointAt(0)!));
+  }
+});

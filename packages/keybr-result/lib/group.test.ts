@@ -74,3 +74,18 @@ test("group results by date", () => {
   deepEqual(map.get(new LocalDate(2001, 1, 3)), [r4]);
   deepEqual(map.get(new LocalDate(2001, 1, 4)), []);
 });
+
+test("cc1 results form their own layout family", () => {
+  const faker = new ResultFaker();
+  const r1 = faker.nextResult({ layout: Layout.EN_US });
+  const r2 = faker.nextResult({ layout: Layout.EN_CC1 });
+  const r3 = faker.nextResult({ layout: Layout.EN_US });
+
+  deepEqual(
+    [...ResultGroups.byLayoutFamily([r1, r2, r3])],
+    [
+      { key: "qwerty", results: [r1, r3] },
+      { key: "cc1", results: [r2] },
+    ],
+  );
+});

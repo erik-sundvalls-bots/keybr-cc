@@ -32,6 +32,35 @@ test("cc1 guided lessons unlock letters by finger and direction", () => {
   equal(included(true), "eaijcd");
 });
 
+test("cc1 guided lessons add the next letter in finger and direction order", () => {
+  const settings = new Settings();
+  const keyboard = loadKeyboard(Layout.EN_CC1);
+  const model = new FakePhoneticModel();
+  const lesson = new GuidedLesson(settings, keyboard, model, []);
+  const included = (confident: string) =>
+    lesson
+      .update(
+        fakeKeyStatsMap(
+          settings,
+          lesson.letters.map((l) =>
+            confident.includes(String.fromCodePoint(l.codePoint))
+              ? [l, 1, 1]
+              : [l, null, null],
+          ),
+        ),
+      )
+      .findIncludedKeys()
+      .map(({ letter }) => String.fromCodePoint(letter.codePoint))
+      .join("");
+
+  // After e a i j c d, the CC1 order of the remaining a–j letters is
+  // f (thumb 1 inward), h (thumb 1 outward), b (thumb 2 inward), g.
+  equal(included("eaijcd"), "eaijcdf");
+  equal(included("eaijcdf"), "eaijcdfh");
+  equal(included("eaijcdfh"), "eaijcdfhb");
+  equal(included("eaijcdfhb"), "eaijcdfhbg");
+});
+
 test("provide key set", () => {
   const settings = new Settings();
   const keyboard = loadKeyboard(Layout.EN_US);
