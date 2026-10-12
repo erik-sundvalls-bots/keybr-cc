@@ -1,5 +1,5 @@
 import { type WordList } from "@keybr/content";
-import { type Keyboard } from "@keybr/keyboard";
+import { type Keyboard, Layout, orderCc1Letters } from "@keybr/keyboard";
 import { Filter, Letter, type PhoneticModel } from "@keybr/phonetic-model";
 import { type RNGStream } from "@keybr/rand";
 import { type KeyStatsMap } from "@keybr/result";
@@ -131,6 +131,9 @@ export class GuidedLesson extends Lesson {
   #getLetters() {
     const { letters } = this.model;
     const { codePoints } = this;
+    if (this.keyboard.layout === Layout.EN_CC1) {
+      return orderCc1Letters(letters);
+    }
     if (this.settings.get(lessonProps.guided.keyboardOrder)) {
       return Letter.weightedFrequencyOrder(letters, ({ codePoint }) =>
         codePoints.weight(codePoint),

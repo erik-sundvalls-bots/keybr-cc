@@ -1,4 +1,4 @@
-import { type Keyboard, KeyboardContext } from "@keybr/keyboard";
+import { Geometry, type Keyboard, KeyboardContext } from "@keybr/keyboard";
 import { type ZoomableProps } from "@keybr/widget";
 import { memo, type ReactNode } from "react";
 import { getFrameSize } from "./shapes.tsx";
@@ -19,6 +19,10 @@ export const VirtualKeyboard = memo(function VirtualKeyboard({
   readonly moving?: boolean;
 } & ZoomableProps): ReactNode {
   const size = getFrameSize(keyboard);
+  // The CC1 picture is a pair of switch clusters, so a fixed 16rem height
+  // would shrink every key. Width stays 100% and the aspect ratio sets the
+  // height. Other geometries keep the height the caller asked for.
+  const frameHeight = keyboard.geometry === Geometry.CC1 ? undefined : height;
   return (
     <svg
       {...props}
@@ -26,7 +30,7 @@ export const VirtualKeyboard = memo(function VirtualKeyboard({
       viewBox={`0 0 ${size.width} ${size.height}`}
       style={{ aspectRatio: `${size.width}/${size.height}` }}
       width={width}
-      height={height}
+      height={frameHeight}
     >
       <rect
         className={styles.frame}

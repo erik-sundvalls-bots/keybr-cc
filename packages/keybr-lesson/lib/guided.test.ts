@@ -9,6 +9,29 @@ import { GuidedLesson } from "./guided.ts";
 import { LessonKey } from "./key.ts";
 import { lessonProps } from "./settings.ts";
 
+test("cc1 guided lessons unlock letters by finger and direction", () => {
+  const keyboard = loadKeyboard(Layout.EN_CC1);
+  const model = new FakePhoneticModel();
+  const included = (keyboardOrder: boolean) => {
+    const lesson = new GuidedLesson(
+      new Settings().set(lessonProps.guided.keyboardOrder, keyboardOrder),
+      keyboard,
+      model,
+      [],
+    );
+    return lesson
+      .update(makeKeyStatsMap(lesson.letters, []))
+      .findIncludedKeys()
+      .map(({ letter }) => String.fromCodePoint(letter.codePoint))
+      .join("");
+  };
+
+  // FakePhoneticModel is a–j. The CC1 order of that subset starts
+  // e, a, i, j, c, d rather than the frequency order a–f.
+  equal(included(false), "eaijcd");
+  equal(included(true), "eaijcd");
+});
+
 test("provide key set", () => {
   const settings = new Settings();
   const keyboard = loadKeyboard(Layout.EN_US);

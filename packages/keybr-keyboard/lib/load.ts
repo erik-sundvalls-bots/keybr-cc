@@ -1,3 +1,4 @@
+import { CC1_CHARACTERS, CC1_GEOMETRY } from "./cc1/build.ts";
 import { Geometry, ZoneMod } from "./geometry.ts";
 import { ANSI_101 } from "./geometry/ansi_101.ts";
 import { ANSI_101_FULL } from "./geometry/ansi_101_full.ts";
@@ -134,6 +135,7 @@ const layouts = new Map<Layout, CharacterDict>([
   [Layout.EL_GR, LAYOUT_EL_GR],
   [Layout.EN_APT_V3, LAYOUT_EN_APTV3],
   [Layout.EN_CANARY, LAYOUT_EN_CANARY],
+  [Layout.EN_CC1, CC1_CHARACTERS],
   [Layout.EN_CANARY_MATRIX, LAYOUT_EN_CANARY_MATRIX],
   [Layout.EN_COLEMAK, LAYOUT_EN_COLEMAK],
   [Layout.EN_COLEMAK_DH_ANSI, LAYOUT_EN_COLEMAK_DH_ANSI],
@@ -234,6 +236,7 @@ const geometries = new Map<Geometry, GeometryDict>([
   [Geometry.KOREAN_103, KOREAN_103],
   [Geometry.KOREAN_103_FULL, KOREAN_103_FULL],
   [Geometry.MATRIX, MATRIX],
+  [Geometry.CC1, CC1_GEOMETRY],
 ]);
 
 export function loadKeyboard(options: KeyboardOptions): Keyboard;
