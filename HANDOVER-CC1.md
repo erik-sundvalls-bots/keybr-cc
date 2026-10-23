@@ -18,20 +18,19 @@ Smallest fit that still teaches the device:
 - Switch centers are chord hubs `600`–`617`, labeled `01`–`18`, not letters. Index hubs are homing keys.
 - Guided lessons use a fixed finger/direction order only when `keyboard.layout === Layout.EN_CC1`. The existing `lesson.guided.keyboardOrder` setting is left untouched and is ignored for CC1.
 
-Letter order (`packages/keybr-keyboard/lib/cc1/order.ts`), strongest fingers and easiest directions first, left hand then right inside a direction:
+Letter order (`packages/keybr-keyboard/lib/cc1/order.ts`), changed 2026-10-23 at Erik's request (he uses the device): start with the index and upper thumb (thumb 1) switches, E R A T M V C K P F H D plus Space.
 
-| Step | Finger | Direction | Letters |
+| Stage | Finger | Direction | Letters |
 | --- | --- | --- | --- |
-| 1 | index | south | e t |
-| 2 | index | inward (left east / right west) | r a |
-| 3 | middle | south | o n |
-| 4 | middle | inward | i l |
-| 5 | middle | outward | j |
-| 6 | thumb 1 | south, north, inward, outward | c d, v p, k f, m h |
-| 7 | thumb 2 | south, north, inward, outward | z q, x, w b, g |
-| 8 | ring | south, inward | u s, y |
+| 1 | index | south, inward | e t, r a |
+| 1 | thumb 1 | south, north, inward, outward | c d, v p, k f, m h |
+| 2 | middle | south, inward, outward | o n, i l, j |
+| 3 | ring | south, inward | u s, y |
+| 4 | thumb 2 | inward, outward, south, north | w b, g, z q, x |
 
-Full string: `etraoniljcdvpkfmhzqxwbgusy`. The first six unlocked letters are `etraon`. Unknown letters (punctuation, accents) are appended by frequency. Pinkies have no letters. Rationale: index and middle carry the most common letters and the shortest reach; south and inward are the directions a new CC1 user hits first; thumbs come before the weaker ring; each new group is one finger plus one joystick direction so the lesson adds a motor pattern, not a scattered frequency pick.
+Full string: `etracdvpkfmhoniljusywbgzqx`. Stage 1 (`CC1_STARTING_LETTERS`, 12 letters) is unlocked together on the first lesson: in `GuidedLesson.update()` the minimal alphabet size is the number of model letters for which `isCc1StartingLetter()` is true, instead of the usual 6. That keeps keybr's own model (a minimum alphabet, then one letter at a time once all included keys reach target speed) and only changes the size of the minimum for this layout. Order inside stage 1 only decides which key is focused first (`e`). After stage 1, one finger at a time (middle, ring, thumb 2: most English text first), one direction at a time on both hands (left then right), directions with more common letters first. Space is on both index switches (left west, right east) and is in every keybr lesson; `getCombo(" ")` is the `Space` key, so the picture highlights it. Unknown letters (punctuation, accents) are appended by frequency. Pinkies have no letters.
+
+The previous order was `etraoniljcdvpkfmhzqxwbgusy` with a 6-letter start (`etraon`).
 
 Geometry (user units, full-size 1×1 keys because the SVG font is designed for `keySize` 40): plus layout with step `1.12`, switch pitch `3.35`, origin `1.7`, hand gap `1.6`. Directions are absolute (north is away from the body), not mirrored. `VirtualKeyboard` omits the usual `16rem` height only for `Geometry.CC1`, so the picture keeps its aspect ratio instead of shrinking to a short strip. Practice, settings preview, replay, help, and heatmaps all go through that component.
 
@@ -109,12 +108,19 @@ Continued on Erik's box (no cloud agent). Node v24.21.0 via nvm, `.env` from `.e
 
 Still not checked by hand in a browser: watching the circle move while typing, heatmap, typing-test replay, help view.
 
+## Box session 2026-10-23: index + upper thumb start
+
+- Erik asked to start with E R A T M V C K P F H D plus Space. Checked against `data.ts`: e r (left index south/east), t a (right index south/west), c v k m (left thumb 1 south/north/east/west), d p f h (right thumb 1 south/north/west/east). All twelve are index or thumb 1, no mismatch. Space is left index west and right index east.
+- New order and stage-1 unlock as described in the design section. `order.test.ts` checks the starting set and full string; `layout.test.ts` still checks every group against the device geometry; `guided.test.ts` checks the fake-model unlock (`eacdfh`, then `i j b g`) and a real English model lesson (12 letters, focus `e`, text only from those letters plus space, Space highlighted).
+- Sample pseudo-word text from the real English model with an empty word list: `deep meeth her teethe feet ave are kvet veer methe pet ete ahead are feet tree reach`. With natural words on (default) and the real word list, the app mixes in dictionary words built from these letters.
+- `docs/charachorder.md` updated.
+
 ## Next steps, in order
 
 1. Use Node 24 or 26 (`export PATH="$HOME/.nvm/versions/node/v24.21.0/bin:$PATH"`).
 2. `npm run compile` if `.types/` is missing, then `npm run build` or `npm run build-dev`.
 3. `cp .env.example .env` if needed. `npm start`. Open `http://localhost:3000/`.
-4. With CharaChorder One selected, type the first few lesson letters and confirm the circle moves. The first guided subset is `etraon`.
+4. With CharaChorder One selected, type the first few lesson letters and confirm the circle moves. The first guided subset is the twelve letters `etracdvpkfmh`.
 5. Open the numbers lesson and the heatmap / typing-test replay / help views and confirm CC1 still renders.
 6. Finish one lesson and confirm the stored result family is `cc1`, not `qwerty`.
 7. If the picture needs a tweak, edit only `packages/keybr-keyboard/lib/cc1/build.ts` (positions) or `VirtualKeyboard.tsx` (frame height). Re-run the CC1 and guided tests.

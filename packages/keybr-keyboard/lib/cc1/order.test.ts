@@ -1,6 +1,12 @@
 import { test } from "node:test";
-import { deepEqual, equal } from "rich-assert";
-import { CC1_LETTER_ORDER, CC1_PROGRESSION, orderCc1Letters } from "./order.ts";
+import { deepEqual, equal, isFalse, isTrue } from "rich-assert";
+import {
+  CC1_LETTER_ORDER,
+  CC1_PROGRESSION,
+  CC1_STARTING_LETTERS,
+  isCc1StartingLetter,
+  orderCc1Letters,
+} from "./order.ts";
 
 test("covers each english letter once", () => {
   equal(CC1_LETTER_ORDER.length, 26);
@@ -19,8 +25,23 @@ test("keeps each finger and direction together", () => {
   equal(cursor, CC1_LETTER_ORDER.length);
 });
 
-test("starts with the index and middle home directions", () => {
-  equal(CC1_LETTER_ORDER.slice(0, 6), "etraon");
+test("starts with every index and upper thumb letter", () => {
+  equal(CC1_STARTING_LETTERS.length, 12);
+  equal(CC1_LETTER_ORDER.slice(0, 12), CC1_STARTING_LETTERS);
+  deepEqual([...CC1_STARTING_LETTERS].sort(), [..."eratmvckpfhd"].sort());
+  for (const group of CC1_PROGRESSION) {
+    equal(
+      group.stage === 1,
+      group.finger === "index" || group.finger === "thumb1",
+    );
+  }
+  isTrue(isCc1StartingLetter({ codePoint: /* "k" */ 0x006b }));
+  isFalse(isCc1StartingLetter({ codePoint: /* "o" */ 0x006f }));
+  isFalse(isCc1StartingLetter({ codePoint: /* SPACE */ 0x0020 }));
+});
+
+test("adds the middle, ring, then middle thumb fingers", () => {
+  equal(CC1_LETTER_ORDER, "etracdvpkfmhoniljusywbgzqx");
 });
 
 test("orders known letters by the hand and appends the rest by frequency", () => {
@@ -37,7 +58,7 @@ test("orders known letters by the hand and appends the rest by frequency", () =>
     orderCc1Letters(letters).map(({ codePoint }) =>
       String.fromCodePoint(codePoint),
     ),
-    ["e", "a", "z", "s", "!", "?"],
+    ["e", "a", "s", "z", "!", "?"],
   );
 });
 
