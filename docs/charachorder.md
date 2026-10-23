@@ -37,4 +37,10 @@ Inside a finger, both hands take a direction together, left hand then right, bef
 
 Full order: `etracdvpkfmh` then `oniljusywbgzqx`. The pinky has no letters on this layout. Punctuation that the phonetic model still includes is appended after the alphabet, in frequency order.
 
+### Real words or pseudo-words
+
+Guided lessons already have a setting for this: **Settings → Lessons → Prefer natural words** (on by default). With it on, keybr types real words from its English word list that use only the unlocked letters and contain the focused letter. It only mixes in generated pseudo-words when fewer than 15 such words exist. With the CC1 order that never happens for English: the twelve starting letters give about 350 real words (the rarest, `v`, still has 22), and every later step has well over 15. Turn the option off to practise with generated pseudo-words instead, which give more varied letter combinations.
+
+Example with the starting set and focus on `k`: `crack packed peeked tracked heck faked kept cake trek keeper creak market`.
+
 The “keyboard order” lesson option does not apply while this layout is selected. Turning it on for any other layout behaves as before.

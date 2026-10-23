@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, it, test } from "node:test";
 import { Language, Layout, loadKeyboard } from "@keybr/keyboard";
 import { FakePhoneticModel } from "@keybr/phonetic-model";
@@ -8,7 +10,7 @@ import { Settings } from "@keybr/settings";
 import { deepEqual, equal, isTrue, match } from "rich-assert";
 import { fakeKeyStatsMap, printLessonKeys } from "./fakes.ts";
 import { GuidedLesson } from "./guided.ts";
-import { LessonKey } from "./key.ts";
+import { LessonKey, LessonKeys } from "./key.ts";
 import { lessonProps } from "./settings.ts";
 
 test("cc1 guided lessons unlock letters by finger and direction", () => {
@@ -88,6 +90,46 @@ test("cc1 english lessons start with the index and upper thumb letters", () => {
 
   // Space is typed with the index switch, and the picture highlights it.
   equal(keyboard.getCombo(/* SPACE */ 0x0020)?.id, "Space");
+});
+
+test("cc1 natural words come from the dictionary for every starting letter", () => {
+  const keyboard = loadKeyboard(Layout.EN_CC1);
+  const { model } = loadModelSync(Language.EN);
+  const wordList = JSON.parse(
+    readFileSync(
+      resolve(
+        import.meta.dirname,
+        "../../keybr-content-words/lib/data/words-en.json",
+      ),
+      "utf-8",
+    ),
+  ) as string[];
+  const settings = new Settings().set(lessonProps.guided.naturalWords, true);
+  const lesson = new GuidedLesson(settings, keyboard, model, wordList);
+  const dictionary = new Set(wordList);
+
+  // Focus each of E R A T M V C K P F H D in turn. Every one has at least
+  // 15 real English words built only from these twelve letters, so the
+  // lesson never falls back to pseudo-words.
+  const initial = lesson.update(makeKeyStatsMap(lesson.letters, []));
+  for (const focus of "eratmvckpfhd") {
+    const lessonKeys = new LessonKeys(
+      lesson.letters.map((letter) => {
+        const key = initial.find(letter.codePoint)!;
+        return new LessonKey({
+          ...key,
+          isFocused: String.fromCodePoint(letter.codePoint) === focus,
+        });
+      }),
+    );
+    const words = lesson.generate(lessonKeys, LCG(1)).split(" ");
+    isTrue(words.length > 3);
+    for (const word of words) {
+      isTrue(dictionary.has(word), `"${word}" is not a dictionary word`);
+      isTrue(word.includes(focus));
+      match(word, /^[eratmvckpfhd]+$/);
+    }
+  }
 });
 
 test("provide key set", () => {
