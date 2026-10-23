@@ -18,16 +18,23 @@ Digits live on the num layer, on the same direction as an A1 letter. They are pr
 
 Guided lessons for this layout unlock letters by finger and direction instead of by language frequency. The order is fixed in `packages/keybr-keyboard/lib/cc1/order.ts`.
 
-Fingers, strongest and most independent first:
+The first lesson starts with every letter on the index and upper thumb (thumb 1) switches of both hands, twelve letters at once:
 
-1. Index
-2. Middle
-3. Thumb 1 (nearest the index)
-4. Thumb 2
-5. Ring
+| Hand | Index | Upper thumb |
+| --- | --- | --- |
+| Left | e (south), r (inward) | c (south), v (north), k (inward), m (outward) |
+| Right | t (south), a (inward) | d (south), p (north), f (inward), h (outward) |
 
-Directions, easiest first: south, north, inward, outward. South and north are a pull or a push along the finger. Inward is toward the center of the device and outward is toward the pinky. Both hands take a direction together, left hand then right, before the next direction starts.
+Space is on the index switches too (left west, right east) and is in every lesson. Other layouts start with the six most frequent letters; this layout starts with this whole finger group instead, so the user learns two complete fingers per hand before anything else. The first focused key is `e`.
 
-The first six letters are `e t r a o n` (index south, index inward, middle south). `s` is on the ring, so it waits until the ring is introduced. The pinky has no letters on this layout. Punctuation that the phonetic model still includes is appended after the alphabet, in frequency order.
+After that, keybr's usual rule applies: a new letter is added once the current ones reach the target speed. New letters come one finger at a time, ordered by how much English text the finger carries:
+
+1. Middle: `o n` (south), `i l` (inward), `j` (outward)
+2. Ring: `u s` (south), `y` (inward)
+3. Thumb 2, the middle thumb switch: `w b` (inward), `g` (outward), `z q` (south), `x` (north)
+
+Inside a finger, both hands take a direction together, left hand then right, before the next direction starts. Directions follow the letters they carry, most common first, so the rare `z q x` come last. Inward is toward the center of the device and outward is toward the pinky.
+
+Full order: `etracdvpkfmh` then `oniljusywbgzqx`. The pinky has no letters on this layout. Punctuation that the phonetic model still includes is appended after the alphabet, in frequency order.
 
 The “keyboard order” lesson option does not apply while this layout is selected. Turning it on for any other layout behaves as before.
