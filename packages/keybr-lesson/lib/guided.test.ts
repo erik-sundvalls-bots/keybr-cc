@@ -1,13 +1,136 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, it, test } from "node:test";
-import { Layout, loadKeyboard } from "@keybr/keyboard";
+import { Language, Layout, loadKeyboard } from "@keybr/keyboard";
 import { FakePhoneticModel } from "@keybr/phonetic-model";
+import { loadModelSync } from "@keybr/phonetic-model/lib/fs-load.ts";
+import { LCG } from "@keybr/rand";
 import { makeKeyStatsMap } from "@keybr/result";
 import { Settings } from "@keybr/settings";
-import { deepEqual, equal } from "rich-assert";
+import { deepEqual, equal, isTrue, match } from "rich-assert";
 import { fakeKeyStatsMap, printLessonKeys } from "./fakes.ts";
 import { GuidedLesson } from "./guided.ts";
-import { LessonKey } from "./key.ts";
+import { LessonKey, LessonKeys } from "./key.ts";
 import { lessonProps } from "./settings.ts";
+
+test("cc1 guided lessons unlock letters by finger and direction", () => {
+  const keyboard = loadKeyboard(Layout.EN_CC1);
+  const model = new FakePhoneticModel();
+  const included = (keyboardOrder: boolean) => {
+    const lesson = new GuidedLesson(
+      new Settings().set(lessonProps.guided.keyboardOrder, keyboardOrder),
+      keyboard,
+      model,
+      [],
+    );
+    return lesson
+      .update(makeKeyStatsMap(lesson.letters, []))
+      .findIncludedKeys()
+      .map(({ letter }) => String.fromCodePoint(letter.codePoint))
+      .join("");
+  };
+
+  // FakePhoneticModel is a–j. Its index and upper thumb letters
+  // (e, a, c, d, f, h) are unlocked together, instead of the six most
+  // frequent letters a–f.
+  equal(included(false), "eacdfh");
+  equal(included(true), "eacdfh");
+});
+
+test("cc1 guided lessons add the next letter in finger and direction order", () => {
+  const settings = new Settings();
+  const keyboard = loadKeyboard(Layout.EN_CC1);
+  const model = new FakePhoneticModel();
+  const lesson = new GuidedLesson(settings, keyboard, model, []);
+  const included = (confident: string) =>
+    lesson
+      .update(
+        fakeKeyStatsMap(
+          settings,
+          lesson.letters.map((l) =>
+            confident.includes(String.fromCodePoint(l.codePoint))
+              ? [l, 1, 1]
+              : [l, null, null],
+          ),
+        ),
+      )
+      .findIncludedKeys()
+      .map(({ letter }) => String.fromCodePoint(letter.codePoint))
+      .join("");
+
+  // After the starting set, the CC1 order of the remaining a–j letters is
+  // i (middle inward), j (middle outward), b (thumb 2 inward), g.
+  equal(included(""), "eacdfh");
+  equal(included("eacdfh"), "eacdfhi");
+  equal(included("eacdfhi"), "eacdfhij");
+  equal(included("eacdfhij"), "eacdfhijb");
+  equal(included("eacdfhijb"), "eacdfhijbg");
+});
+
+test("cc1 english lessons start with the index and upper thumb letters", () => {
+  const keyboard = loadKeyboard(Layout.EN_CC1);
+  const { model } = loadModelSync(Language.EN);
+  const lesson = new GuidedLesson(new Settings(), keyboard, model, []);
+  const lessonKeys = lesson.update(makeKeyStatsMap(lesson.letters, []));
+  const included = lessonKeys
+    .findIncludedKeys()
+    .map(({ letter }) => String.fromCodePoint(letter.codePoint));
+
+  // The user-facing set is E R A T M V C K P F H D.
+  deepEqual([...included].sort(), [..."eratmvckpfhd"].sort());
+  equal(
+    String.fromCodePoint(lessonKeys.findFocusedKey()!.letter.codePoint),
+    "e",
+  );
+
+  const text = lesson.generate(lessonKeys, LCG(1));
+  isTrue(text.length > 20);
+  match(text, /^[eratmvckpfhd ]+$/);
+  isTrue(text.split(" ").every((word) => word.includes("e")));
+
+  // Space is typed with the index switch, and the picture highlights it.
+  equal(keyboard.getCombo(/* SPACE */ 0x0020)?.id, "Space");
+});
+
+test("cc1 natural words come from the dictionary for every starting letter", () => {
+  const keyboard = loadKeyboard(Layout.EN_CC1);
+  const { model } = loadModelSync(Language.EN);
+  const wordList = JSON.parse(
+    readFileSync(
+      resolve(
+        import.meta.dirname,
+        "../../keybr-content-words/lib/data/words-en.json",
+      ),
+      "utf-8",
+    ),
+  ) as string[];
+  const settings = new Settings().set(lessonProps.guided.naturalWords, true);
+  const lesson = new GuidedLesson(settings, keyboard, model, wordList);
+  const dictionary = new Set(wordList);
+
+  // Focus each of E R A T M V C K P F H D in turn. Every one has at least
+  // 15 real English words built only from these twelve letters, so the
+  // lesson never falls back to pseudo-words.
+  const initial = lesson.update(makeKeyStatsMap(lesson.letters, []));
+  for (const focus of "eratmvckpfhd") {
+    const lessonKeys = new LessonKeys(
+      lesson.letters.map((letter) => {
+        const key = initial.find(letter.codePoint)!;
+        return new LessonKey({
+          ...key,
+          isFocused: String.fromCodePoint(letter.codePoint) === focus,
+        });
+      }),
+    );
+    const words = lesson.generate(lessonKeys, LCG(1)).split(" ");
+    isTrue(words.length > 3);
+    for (const word of words) {
+      isTrue(dictionary.has(word), `"${word}" is not a dictionary word`);
+      isTrue(word.includes(focus));
+      match(word, /^[eratmvckpfhd]+$/);
+    }
+  }
+});
 
 test("provide key set", () => {
   const settings = new Settings();

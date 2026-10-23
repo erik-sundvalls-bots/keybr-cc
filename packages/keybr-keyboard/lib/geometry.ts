@@ -108,6 +108,12 @@ export class Geometry implements EnumItem {
     "matrix",
     new Enum(),
   );
+  static readonly CC1 = new Geometry(
+    "cc1",
+    "CharaChorder One",
+    "matrix",
+    new Enum(),
+  );
 
   static readonly ALL = new Enum<Geometry>(
     Geometry.ANSI_101,
@@ -121,6 +127,7 @@ export class Geometry implements EnumItem {
     Geometry.JAPANESE_106,
     Geometry.JAPANESE_106_FULL,
     Geometry.MATRIX,
+    Geometry.CC1,
   );
 
   static first(items: Iterable<Geometry>): Geometry {

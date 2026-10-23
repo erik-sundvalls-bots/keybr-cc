@@ -59,3 +59,24 @@ test("write and read", () => {
   deepEqual(readResult(reader), expected);
   equal(reader.remaining(), 0);
 });
+
+test("write and read a cc1 result", () => {
+  const histogram = new Histogram([
+    { codePoint: 0x0065, hitCount: 10, missCount: 1, timeToType: 150 },
+  ]);
+  const result = new Result(
+    /* layout= */ Layout.EN_CC1,
+    /* textType= */ TextType.GENERATED,
+    /* timeStamp= */ Date.parse("2001-02-03T03:05:06Z"),
+    /* length= */ 100,
+    /* time= */ 10000,
+    /* errors= */ 1,
+    /* histogram= */ histogram,
+  );
+  const writer = new Writer();
+  writeResult(writer, result);
+  const read = readResult(new Reader(writer.buffer()));
+  equal(read.layout, Layout.EN_CC1);
+  equal(read.layout.family, "cc1");
+  deepEqual(read, result);
+});

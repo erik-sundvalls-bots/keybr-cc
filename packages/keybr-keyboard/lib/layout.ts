@@ -12,7 +12,9 @@ export class Layout implements XEnumItem {
       /* family= */ "custom",
       /* language= */ language,
       /* emulate= */ true,
-      /* geometries= */ Geometry.ALL,
+      /* geometries= */ new Enum(
+        ...Geometry.ALL.filter((geometry) => geometry !== Geometry.CC1),
+      ),
     );
   }
 
@@ -1325,6 +1327,15 @@ export class Layout implements XEnumItem {
       Geometry.ISO_102_FULL,
     ),
   );
+  static readonly EN_CC1 = new Layout(
+    /* id= */ "en-cc1",
+    /* xid= */ 0xb2,
+    /* name= */ "CharaChorder One",
+    /* family= */ "cc1",
+    /* language= */ Language.EN,
+    /* emulate= */ true,
+    /* geometries= */ new Enum(Geometry.CC1),
+  );
   static readonly ES_DVORAK = new Layout(
     /* id= */ "es-dvorak",
     /* xid= */ 0xab,
@@ -1448,6 +1459,7 @@ export class Layout implements XEnumItem {
     Layout.EN_UK,
     Layout.EN_JP,
     Layout.EN_MTGAP,
+    Layout.EN_CC1,
     Layout.EL_GR,
     Layout.BR_CHWERTY_MATHS,
     Layout.CS_CZ,

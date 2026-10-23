@@ -98,13 +98,13 @@ static readonly EN_CUSTOM = new Layout(
 
 Give the layout a name, select a unique `id` and `xid`:
 
-* `id` is a human-readable string that we store in JSON files.
+- `id` is a human-readable string that we store in JSON files.
   It should follow the next pattern: <nobr>`"xx-yy"`</nobr>,
   where `"xx"` is a [ISO 639-1 two-letter language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes),
   and `"yy"` is a [ISO 3166-2 two-letter country code](https://en.wikipedia.org/wiki/ISO_3166-2), all lowercase.
   Examples are <nobr>`"fr-ca"`</nobr> for the French language in Canada or <nobr>`"sv-se"`</nobr> for the Swedish language in Sweden.
   Or, if you have a custom layout, name it as <nobr>`"xx-custom-layout-id"`</nobr>.
-* `xid` is a single-byte numeric identifier that we store in binary files.
+- `xid` is a single-byte numeric identifier that we store in binary files.
   Increase the largest `xid` of an existing layout by one.
 
 Once assigned, these identifiers must never change.
@@ -116,7 +116,7 @@ or as <nobr>`"Βραζιλία (ABNT2)"`</nobr> when the user interface language
 ### Layout family
 
 Lesson results from different keyboard layouts that belong to the same layout family are combined and show together.
-Otherwise, switching from the *United States* to the *United Kingdom* would invalidate your previous results as if you switched to a completely new layout.
+Otherwise, switching from the _United States_ to the _United Kingdom_ would invalidate your previous results as if you switched to a completely new layout.
 However, since these two layouts belong to the same family `"qwerty"`, this is not the case.
 
 The most common families are `"qwerty"`, `"qwertz"` and `"azerty"`.
@@ -132,7 +132,11 @@ The emulation option can be enabled if your layout does not include dead keys.
 
 ### Layout geometries
 
-The geometries option allows the selection of the enabled layout geometries, such as *ISO*, *ANSI*, etc.
-Some layouts are only available with a specific geometry, such as *matrix*.
+The geometries option allows the selection of the enabled layout geometries, such as _ISO_, _ANSI_, etc.
+Some layouts are only available with a specific geometry, such as _matrix_.
 
 The first listed geometry is the preferred one.
+
+## CharaChorder One
+
+The CharaChorder One layout is not generated from CLDR or the Keyboard Layout Creator. The device is two clusters of five-way switches, and its default English map is not a row-staggered keyboard. See [charachorder.md](charachorder.md) for the geometry, the letter order, and the limits of the current keyboard model.

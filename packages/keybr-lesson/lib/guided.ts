@@ -1,5 +1,10 @@
 import { type WordList } from "@keybr/content";
-import { type Keyboard } from "@keybr/keyboard";
+import {
+  isCc1StartingLetter,
+  type Keyboard,
+  Layout,
+  orderCc1Letters,
+} from "@keybr/keyboard";
 import { Filter, Letter, type PhoneticModel } from "@keybr/phonetic-model";
 import { type RNGStream } from "@keybr/rand";
 import { type KeyStatsMap } from "@keybr/result";
@@ -44,7 +49,12 @@ export class GuidedLesson extends Lesson {
 
     const letters = this.#getLetters();
 
-    const minSize = 6;
+    // CC1 starts with a whole finger group (index and upper thumb, twelve
+    // letters in English) instead of the usual six most frequent letters.
+    const minSize =
+      this.keyboard.layout === Layout.EN_CC1
+        ? letters.filter(isCc1StartingLetter).length || 6
+        : 6;
     const maxSize =
       minSize + Math.round((letters.length - minSize) * alphabetSize);
 
@@ -131,6 +141,9 @@ export class GuidedLesson extends Lesson {
   #getLetters() {
     const { letters } = this.model;
     const { codePoints } = this;
+    if (this.keyboard.layout === Layout.EN_CC1) {
+      return orderCc1Letters(letters);
+    }
     if (this.settings.get(lessonProps.guided.keyboardOrder)) {
       return Letter.weightedFrequencyOrder(letters, ({ codePoint }) =>
         codePoints.weight(codePoint),

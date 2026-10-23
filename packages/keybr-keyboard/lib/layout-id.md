@@ -164,7 +164,7 @@
 - `0xaf`: English/Hands Down Promethium Inverted (Matrix)
 - `0xb0`:
 - `0xb1`: Breton/France
-- `0xb2`:
+- `0xb2`: English/CharaChorder One
 - `0xb3`:
 - `0xb4`:
 - `0xb5`:
@@ -243,7 +243,7 @@
 - `0xfe`:
 - `0xff`:
 
-98 allocated identifiers
+99 allocated identifiers
 
-142 free identifiers
+141 free identifiers
 
