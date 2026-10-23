@@ -1,6 +1,7 @@
 import { ErrorHandler } from "@keybr/debug";
 import {
   getPageData,
+  getStaticSite,
   LoadingProgress,
   PageDataContext,
   Pages,
@@ -18,6 +19,15 @@ import { ThemeProvider } from "./themes/ThemeProvider.tsx";
 import { Title } from "./Title.tsx";
 
 export function main() {
+  if (
+    getStaticSite() != null &&
+    document.querySelector(Root.selector) == null
+  ) {
+    // The static GitHub Pages HTML cannot know the hashed root element id.
+    const div = document.createElement("div");
+    div.id = Root.selector.slice(1);
+    document.body.prepend(div);
+  }
   createRoot(querySelector(Root.selector)).render(<App />);
 }
 
@@ -51,7 +61,9 @@ export function App() {
 function PageRoutes() {
   const { locale } = useIntl();
   return (
-    <BrowserRouter basename={Pages.intlBase(locale)}>
+    <BrowserRouter
+      basename={(getStaticSite()?.basename ?? "") + Pages.intlBase(locale)}
+    >
       <Routes>
         <Route
           index={true}

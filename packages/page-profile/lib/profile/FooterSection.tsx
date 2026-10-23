@@ -1,11 +1,13 @@
 import { useResults } from "@keybr/result";
 import { Button, Field, FieldList, Icon } from "@keybr/widget";
-import { mdiDeleteForever, mdiDownload } from "@mdi/js";
+import { mdiDeleteForever, mdiDownload, mdiUpload } from "@mdi/js";
 import { useIntl } from "react-intl";
+import { parseTypingData, selectNewResults } from "./importdata.ts";
 
 export function FooterSection() {
   const { formatMessage } = useIntl();
-  const { handleDownloadData, handleResetData } = useCommands();
+  const { handleDownloadData, handleImportData, handleResetData } =
+    useCommands();
 
   return (
     <FieldList>
@@ -23,6 +25,17 @@ export function FooterSection() {
           })}
           onClick={() => {
             handleDownloadData();
+          }}
+        />
+      </Field>
+      <Field>
+        <Button
+          size={16}
+          icon={<Icon shape={mdiUpload} />}
+          label="Import data"
+          title="Restore typing data from a JSON file saved with Download data."
+          onClick={() => {
+            handleImportData();
           }}
         />
       </Field>
@@ -51,12 +64,35 @@ export function FooterSection() {
 
 function useCommands() {
   const { formatMessage } = useIntl();
-  const { results, clearResults } = useResults();
+  const { results, appendResults, clearResults } = useResults();
   return {
     handleDownloadData: () => {
       const json = JSON.stringify(results);
       const blob = new Blob([json], { type: "application/json" });
       download(blob, "typing-data.json");
+    },
+    handleImportData: () => {
+      pickFile(async (file) => {
+        let imported;
+        try {
+          imported = parseTypingData(await file.text());
+        } catch (err) {
+          window.alert(`Could not read ${file.name}: ${String(err)}`);
+          return;
+        }
+        const { added, skipped } = selectNewResults(results, imported);
+        if (added.length > 0) {
+          appendResults(added);
+        }
+        window.alert(
+          `Imported ${added.length} result(s) from ${file.name}.` +
+            (skipped > 0
+              ? ` Skipped ${skipped} that were duplicates or older than ` +
+                `your latest local result (reset statistics first to ` +
+                `restore a full history).`
+              : ""),
+        );
+      });
     },
     handleResetData: () => {
       const message = formatMessage({
@@ -80,4 +116,17 @@ function download(blob: Blob, name: string) {
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
+}
+
+function pickFile(callback: (file: File) => void) {
+  const input = document.createElement("input");
+  input.setAttribute("type", "file");
+  input.setAttribute("accept", "application/json,.json");
+  input.addEventListener("change", () => {
+    const file = input.files?.[0];
+    if (file != null) {
+      callback(file);
+    }
+  });
+  input.click();
 }

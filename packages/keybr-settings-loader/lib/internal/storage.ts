@@ -46,7 +46,11 @@ export function openSettingsStorage(
         if (value != null) {
           return new Settings(value as any);
         } else {
-          const settings = new Settings(undefined, true);
+          // The static GitHub Pages build may provide first-visit defaults,
+          // e.g. the CharaChorder One layout.
+          const defaults = (globalThis as any).__KEYBR_STATIC__
+            ?.defaultSettings;
+          const settings = new Settings(defaults ?? undefined, true);
           storage.set(STORAGE_KEY, settings.toJSON());
           return settings;
         }

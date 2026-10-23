@@ -1,4 +1,4 @@
-import { isPremiumUser, usePageData } from "@keybr/pages-shared";
+import { getStaticSite, isPremiumUser, usePageData } from "@keybr/pages-shared";
 import { AdBanner } from "@keybr/thirdparties";
 import { PortalContainer, Toaster } from "@keybr/widget";
 import { type ReactNode } from "react";
@@ -13,7 +13,8 @@ export function Template({
   readonly children: ReactNode;
 }) {
   const { publicUser } = usePageData();
-  return isPremiumUser(publicUser) ? (
+  // The static build has no ads, so it uses the ad-free layout.
+  return isPremiumUser(publicUser) || getStaticSite() != null ? (
     <div className={styles.bodyAlt}>
       <main className={styles.mainAlt}>
         {children}

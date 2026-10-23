@@ -1,6 +1,7 @@
 import {
   type AnyUser,
   Avatar,
+  getStaticSite,
   type PageInfo,
   Pages,
   usePageData,
@@ -16,11 +17,20 @@ import { ThemeSwitcher } from "./themes/ThemeSwitcher.tsx";
 
 export function NavMenu({ currentPath }: { readonly currentPath: string }) {
   const { publicUser } = usePageData();
+  const staticSite = getStaticSite();
   return (
     <div className={styles.root}>
-      <MenuItem>
-        <AccountLink user={publicUser} />
-      </MenuItem>
+      {staticSite == null ? (
+        <MenuItem>
+          <AccountLink user={publicUser} />
+        </MenuItem>
+      ) : (
+        <MenuItem>
+          <a className={styles.link} href={staticSite.sourceUrl}>
+            <span className={styles.label}>Source (AGPL-3.0)</span>
+          </a>
+        </MenuItem>
+      )}
 
       <MenuItem>
         <ThemeSwitcher />
@@ -38,13 +48,17 @@ export function NavMenu({ currentPath }: { readonly currentPath: string }) {
         <MenuItemLink page={Pages.help} />
       </MenuItem>
 
-      <MenuItem>
-        <MenuItemLink page={Pages.highScores} />
-      </MenuItem>
+      {staticSite == null && (
+        <MenuItem>
+          <MenuItemLink page={Pages.highScores} />
+        </MenuItem>
+      )}
 
-      <MenuItem>
-        <MenuItemLink page={Pages.multiplayer} />
-      </MenuItem>
+      {staticSite == null && (
+        <MenuItem>
+          <MenuItemLink page={Pages.multiplayer} />
+        </MenuItem>
+      )}
 
       <MenuItem>
         <MenuItemLink page={Pages.typingTest} />

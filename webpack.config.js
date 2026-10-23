@@ -167,7 +167,8 @@ export default [
     output: {
       path: join(import.meta.dirname, "root", "public", "assets"),
       clean: true,
-      publicPath: "/assets/",
+      // KEYBR_PUBLIC_PATH is set by the GitHub Pages build (pages-cc1/build.sh).
+      publicPath: process.env.KEYBR_PUBLIC_PATH || "/assets/",
       filename: `${filename}.js`,
       chunkFilename: `${chunkFilename}.js`,
       assetModuleFilename: `${assetModuleFilename}[ext]`,
