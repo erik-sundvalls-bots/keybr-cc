@@ -1,20 +1,20 @@
 # Static GitHub Pages build (CharaChorder One)
 
 This branch (`gh-pages-cc1`) holds only the GitHub Pages setup for the fork
-<https://github.com/erik-sundvalls-bots/keybr.com>. It is built on top of the
+<https://github.com/erik-sundvalls-bots/keybr-cc>. It is built on top of the
 upstream-bound feature branch `cursor/cc1-layout-dac1` (PR #1 in the fork) and
 is **not** meant to go upstream.
 
-Live site: <https://erik-sundvalls-bots.github.io/keybr.com/>
+Live site: <https://erik-sundvalls-bots.github.io/keybr-cc/>
 
 keybr.com is licensed under the GNU AGPL-3.0 (see `LICENSE`). The deployed
 site links back to this source and ships `LICENSE.txt`.
 
 ## What the static build does
 
-- Builds only the webpack `browser` config, with `KEYBR_PUBLIC_PATH=/keybr.com/assets/`.
+- Builds only the webpack `browser` config, with `KEYBR_PUBLIC_PATH=/keybr-cc/assets/`.
 - `make-html.js` writes `index.html` (and the same `404.html`, so deep links
-  such as `/keybr.com/profile` work) instead of the server-rendered HTML shell.
+  such as `/keybr-cc/profile` work) instead of the server-rendered HTML shell.
   It sets an anonymous user and `__KEYBR_STATIC__` with the router basename,
   the source link and first-visit defaults (CharaChorder One layout).
 - Settings live in `localStorage` and results in IndexedDB, as for any

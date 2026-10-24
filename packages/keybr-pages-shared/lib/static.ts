@@ -2,7 +2,7 @@
 // Lives only on the gh-pages-cc1 branch, not in the upstream-bound PR.
 
 export type StaticSite = {
-  /** Router basename, e.g. "/keybr.com". */
+  /** Router basename, e.g. "/keybr-cc". */
   readonly basename: string;
   /** Link to the source code (AGPL-3.0). */
   readonly sourceUrl: string;
