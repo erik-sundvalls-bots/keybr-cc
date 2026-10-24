@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!--
+  keybr.com fork with CharaChorder One support.
+  Based on keybr.com by its authors, https://github.com/aradzie/keybr.com
+  Licensed under the GNU Affero General Public License v3.0 (AGPL-3.0),
+  see /keybr-cc/LICENSE.txt. Source code: https://github.com/erik-sundvalls-bots/keybr-cc/tree/gh-pages-cc1 (commit 7c3786552d1d071e684446204d7d52ce15659e30).
+-->
+<html lang="en" dir="ltr" data-color="system" data-font="open-sans">
+<head>
+<meta charset="UTF-8">
+<title>keybr CharaChorder One (static fork build)</title>
+<link rel="stylesheet" href="/keybr-cc/assets/5a6724314903e4be.css">
+<link rel="icon" href="/keybr-cc/favicon.ico">
+<link rel="license" href="/keybr-cc/LICENSE.txt">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<script>
+// The keybr server sets the theme attributes from the "prefs" cookie;
+// the static build does the same here before the styles apply.
+(function () {
+  try {
+    var m = document.cookie.match(/(?:^|;\s*)prefs=([^;]*)/);
+    if (m) {
+      var p = JSON.parse(decodeURIComponent(m[1]));
+      var ok = /^[a-z0-9-]+$/;
+      if (ok.test(p.color)) document.documentElement.setAttribute("data-color", p.color);
+      if (ok.test(p.font)) document.documentElement.setAttribute("data-font", p.font);
+    }
+  } catch (e) {}
+})();
+</script>
+<script>var __PAGE_DATA__ = {"base":"https://erik-sundvalls-bots.github.io/keybr-cc","locale":"en","user":null,"publicUser":{"id":null,"name":"Anonymous","imageUrl":null},"settings":null};
+var __KEYBR_STATIC__ = {"basename":"/keybr-cc","sourceUrl":"https://github.com/erik-sundvalls-bots/keybr-cc/tree/gh-pages-cc1","commit":"7c3786552d1d071e684446204d7d52ce15659e30","defaultSettings":{"keyboard.language":"en","keyboard.layout":"en-cc1","keyboard.geometry":"cc1"}};</script>
+<script src="/keybr-cc/assets/191516207aaf0c89.js" defer></script>
+<script src="/keybr-cc/assets/044b0d79d0cdac86.js" defer></script>
+<script src="/keybr-cc/assets/b870b8c0fc9b0c75.js" defer></script>
+</head>
+<body>
+<noscript>JavaScript is required. Source code: <a href="https://github.com/erik-sundvalls-bots/keybr-cc/tree/gh-pages-cc1">https://github.com/erik-sundvalls-bots/keybr-cc/tree/gh-pages-cc1</a> (AGPL-3.0).</noscript>
+</body>
+</html>
